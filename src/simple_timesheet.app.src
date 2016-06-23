@@ -1,0 +1,14 @@
+{application, simple_timesheet,
+ [
+  {description, "Simple Erlang Timesheet"},
+  {vsn, "1.0"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  mnesia,
+                  lager
+                 ]},
+  {mod, { st_app, []}},
+  {env, []}
+ ]}.

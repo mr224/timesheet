@@ -1,0 +1,8 @@
+<html>
+<form action="/post_form.yaws"
+method="post"
+<p> A Input field
+<input name="xyz" type="text">
+<input type="submit">
+</form>
+</html>

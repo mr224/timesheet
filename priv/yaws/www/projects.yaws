@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projects</title>
+</head>
+<body>
+    <a href="/main.html">Main Page</a>
+    <br>
+    <a href="/projects.yaws">Projects</a>
+    <br>
+    <br>
+<p>Hello, user!
+<button type="button" onclick="add_new_project.yaws">Add Project</button>
+</body>
+</html>
+<erl>
+out(A) ->
+    {ok,Session} = st_yaws_arg_rewrite:check_session(?ST_SESSION_NAME, A),
+    {ok,UserObj} = st_api:get_user_obj(Session#session.user),
+    handle(Arg#arg.req#http_request.method,Arg);
+    {ehtml,
+        {html,[],
+        [{h2, [], "Login page"},
+        {hr},
+        {form, [{action,"login_post.yaws"},
+        {method,post}],
+        [{p,[], "Username"}, {input, [{type,text},{name,uname}]},
+        {p,[],"Password"}, {input, [{type,password},{name,passwd}]},
+        {input, [{type,submit},{value,"Login"}]},
+        {input, [{type,hidden},{name,url},
+        {value, A#arg.state}]}]}]}
+        }.
+
+handle('GET', Arg)->
+  Q = yaws_api:parse_query(Arg),
+  Res = get_answer(Q),
+  {ehtml, io_lib:format("~p",[Res])};
+</erl>

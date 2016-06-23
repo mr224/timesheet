@@ -1,0 +1,11 @@
+<erl>
+out(A) ->
+Form =
+{form, [{enctype, "multipart/form-data"},
+{method, post},
+{action, "file_upload_form.yaws1"}],
+[{input, [{type, submit}, {value, "Upload"}]},
+{input, [{type,file}, {width, "50"}, {name, foo}]}]},
+{ehtml, {html,[], [{h2,[], "A simple file upload page 123"},
+Form]}}.
+</erl>

@@ -1,0 +1,38 @@
+<erl>
+-include("include/st_types.hrl").
+
+out(A) ->
+    lager:log(debug,self(),"start login_post ~p",[A]),
+    Q = yaws_api:parse_post(A),
+    Login = list_to_binary(kv("uname", Q)),
+    Pwd = list_to_binary(kv("passwd", Q)),
+    case st_session_handler:auth(Login, Pwd) of
+        {ok,UserID} ->
+            lager:log(info,self(),"auth success"),
+            SessionID =
+                case st_session_handler:create_new_session(Login,UserID) of
+                    {ok,Val} ->
+                        Val;
+                    {error,Reason}->
+                        {error,Reason}
+                end,
+            lager:log(debug,self(),"session id created ~p",[SessionID]),
+            %%Cookie = yaws_api:new_cookie_session(SessionID),
+            %%lager:debug("cookie created ~p",[Cookie]),
+            [
+            {redirect_local, kv("url", Q)},
+            %%{redirect_local, "/home.html"},
+            yaws_api:set_cookie(?ST_SESSION_NAME,SessionID,[])];
+        Err ->
+            lager:log(error,self(),"auth failed~n"),
+            {ehtml,
+            {html, [],
+            {p, [], f("Bad login or password: ~p",[Err])}}}
+    end.
+
+kv(K,L) ->
+    {value, {K, V}} = lists:keysearch(K,1,L),
+V.
+
+
+</erl>

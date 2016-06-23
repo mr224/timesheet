@@ -1,0 +1,42 @@
+<erl>
+-include("include/st_types.hrl").
+
+out(A) ->
+    case st_yaws_arg_rewrite:check_cookie(A, ?ST_SESSION_NAME) of
+        {ok,SessionObj}->
+            Login = binary_to_list(st_obj:get(?ST_SESSION_LOGIN, SessionObj)),
+            {ehtml,
+            {html, [], [
+                f("Hi, ~p, you're already signed in",[Login]),
+                {br},{br},
+                {a,[{href,"/main.html"}],"Main Page"},
+                {br},{br},
+                {a,[{href,"/log_out.yaws"}],"Log Out"}
+                ]}
+            };
+         _->
+            Url = case A#arg.state of
+                undefined->
+                    "/login.yaws";
+                V->
+                    V
+            end,
+            {ehtml,
+                {html,[],
+                [
+                    {h2, [], "Login page"},
+                    {hr},
+                    {form, [{action,"login_post.yaws"},
+                    {method,post}],
+                    [{p,[], "Username"},
+                    {input, [{type,text},{name,uname}]},
+                    {p,[],"Password"},
+                    {input, [{type,password},{name,passwd}]},
+                    {input, [{type,submit},{value,"Login"}]},
+                    {input, [{type,hidden},{name,url},
+                    {value, Url}]}]},
+                    {a,[{href,"/sign_up.yaws"}],"Or Sign Up"}
+                ]}
+                }
+    end.
+</erl>

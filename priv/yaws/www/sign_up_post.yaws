@@ -1,0 +1,28 @@
+<erl>
+-include("include/st_types.hrl").
+
+out(A) ->
+    lager:log(debug,self(),"start sugn_up_post ~p",[A]),
+    Q = yaws_api:parse_post(A),
+    Name = list_to_binary(kv("uname", Q)),
+    Pwd = list_to_binary(kv("passwd", Q)),
+    Email = list_to_binary(kv("email", Q)),
+    Login = list_to_binary(kv("login", Q)),
+    Phone = list_to_binary(kv("phone", Q)),
+    case st_member_manager:add_new_user(Login,Pwd,Name,Email,Phone) of
+        {ok,UserID} ->
+            lager:log(info,self(),"sign up success"),
+            [{redirect_local, "/sign_up_success.html"}];
+        Err ->
+            lager:log(error,self(),"sign up failed, login = ~p",[Login]),
+            {ehtml,
+            {html, [],
+            {p, [], f("Bad login or password: ~p",[Err])}}}
+    end.
+
+kv(K,L) ->
+    {value, {K, V}} = lists:keysearch(K,1,L),
+V.
+
+
+</erl>

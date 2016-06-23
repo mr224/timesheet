@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adding Timestamp</title>
+</head>
+<body>
+    <a href="/adding_timestamp.yaws">Add timestamp</a>
+    <br>
+    <a href="/show_timesheet.yaws">Show timesheet</a>
+<h1>Hello, user!</h1>
+<form method="post">
+  Date:<br>
+  <input type="date" name="date"><br>
+  Hours Spent:<br>
+  <input type="number" name="time_spent"><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>
+<erl>
+out(A) ->
+    handle(Arg#arg.req#http_request.method,Arg);
+    {ehtml,
+        {html,[],
+        [{h2, [], "Login page"},
+        {hr},
+        {form, [{action,"login_post.yaws"},
+        {method,post}],
+        [{p,[], "Username"}, {input, [{type,text},{name,uname}]},
+        {p,[],"Password"}, {input, [{type,password},{name,passwd}]},
+        {input, [{type,submit},{value,"Login"}]},
+        {input, [{type,hidden},{name,url},
+        {value, A#arg.state}]}]}]}
+        }.
+
+handle('GET', Arg)->
+  Q = yaws_api:parse_query(Arg),
+  Res = get_answer(Q),
+  {ehtml, io_lib:format("~p",[Res])};
+</erl>
