@@ -1,0 +1,30 @@
+<erl>
+-include("include/st_types.hrl").
+
+out(A) ->
+    lager:log(debug,self(),"creating project ~p",[A]),
+    Q = yaws_api:parse_post(A),
+    Name = list_to_binary(kv("name", Q)),
+    Type = list_to_binary(kv("type", Q)),
+    Company = list_to_binary(kv("company", Q)),
+    Manager = list_to_binary(kv("manager", Q)),
+    Assign = list_to_binary(kv("assign", Q)),
+    Description = list_to_binary(kv("description", Q)),
+    Priority = list_to_binary(kv("priority", Q)),
+    case st_member_manager:add_project(Company,Name,Type,Description,Priority,Manager,Assign) of
+        {ok,ProjectID} ->
+            lager:log(info,self(),"project created"),
+            [{redirect_local, "/project_created.html"}];
+        Err ->
+            lager:log(error,self(),"project creation failed, Name = ~p",[Name]),
+            {ehtml,
+            {html, [],
+            {p, [], f("Project creation failed: ~p",[Err])}}}
+    end.
+
+kv(K,L) ->
+    {value, {K, V}} = lists:keysearch(K,1,L),
+V.
+
+
+</erl>

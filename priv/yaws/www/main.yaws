@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Timesheet Management</title>
+</head>
+<body>
+    <a href="/projects.yaws">Show projects</a>
+    <br>
+    <a href="/add_project.yaws">Add project</a>
+<erl>
+-include("include/st_types.hrl").
+out(A) ->
+    {ok,Session} = st_yaws_arg_rewrite:check_cookie(A,?ST_SESSION_NAME),
+    Login = binary_to_list(st_obj:get(?ST_SESSION_LOGIN,Session)),
+    {ehtml,
+    [{h1,[],f("Hi, ~s!",[Login])}]
+    }.
+
+
+</erl>
+</body>
+</html>

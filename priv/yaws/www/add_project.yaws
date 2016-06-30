@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Project</title>
+</head>
+<body>
+    <a href="/main.yaws">Main Page</a>
+    <br>
+    <a href="/projects.yaws">Projects</a>
+<h1>Please, fill the form</h1>
+<form method="post" action="add_project_post.yaws">
+  <br>
+  Name:
+  <br>
+  <input type="text" name="name"><br>
+  Type:<br>
+  <select name="type">
+    <option value="bug">Bug</option>
+    <option value="task">Task</option>
+    <option value="feature">New Feature</option>
+  </select>
+  <erl>
+    -include("include/st_types.hrl").
+    out(A) ->
+        {ok,Session} = st_yaws_arg_rewrite:check_cookie(A,?ST_SESSION_NAME),
+        CompanyID = st_obj:get(?ST_SESSION_COMPANY_ID,Session),
+        UserID = st_obj:get(?ST_SESSION_USER_ID,Session),
+        {ok,UserObj} = st_api:get_user_obj(UserID),
+        {ok,CompanyObj} = st_api:get_company_obj(CompanyID),
+        Manager = UserID,
+        Assign = UserID,
+        {ehtml,
+            {html,[],
+            [{br},
+            "Company: ",{br},
+            {select, [{name,company}],
+                [{option, [{value,CompanyID}],st_obj:get(?ST_COMPANY_NAME,CompanyObj)}]
+            },{br},
+            "Manager: ",{br},
+            {select, [{name,manager}],
+                [{option, [{value,Manager}],st_obj:get(?ST_USER_NAME,UserObj)}]
+            },{br},
+            "Assign: ",{br},
+            {select, [{name,assign}],
+                [{option, [{value,Assign}],st_obj:get(?ST_USER_NAME,UserObj)}]
+            }
+            ]}
+            }.
+  </erl>
+  <br>
+  Description:
+  <br>
+  <input type="text" name="description"><br>
+  Priority:
+  <br>
+  <select name="priority">
+    <option value="high">High</option>
+    <option value="medium">Medium</option>
+    <option value="medium">Low</option>
+  </select>
+  <br><br>
+  <input type="submit" value="Add Company">
+</form>
+</body>
+</html>

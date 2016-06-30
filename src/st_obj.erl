@@ -7,6 +7,7 @@
 
 -export([new/1,new/2,put/3,put/2,get/2,remove/2]).
 -export([id/1,data/1]).
+-export([record_to_obj/2]).
 -export([obj_to_member/1]).
 -export([obj_to_employee/1,employee_to_obj/1]).
 -export([obj_to_company/1,company_to_obj/1]).
@@ -22,6 +23,20 @@
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
+
+record_to_obj(?TABLE_COMPANY,ID)->
+  company_to_obj(ID);
+record_to_obj(?TABLE_EMPLOYEE,ID)->
+  employee_to_obj(ID);
+record_to_obj(?TABLE_PROJECT,ID)->
+  project_to_obj(ID);
+record_to_obj(?TABLE_TIMESHEET,ID)->
+  timestamp_to_obj(ID);
+record_to_obj(?TABLE_SESSION,ID)->
+  session_to_obj(ID);
+record_to_obj(Table,_ID)->
+  {no_such_table,Table}.
+
 
 new(ID)->
   #st_obj{id=ID, data=orddict:new()}.
@@ -120,7 +135,7 @@ obj_to_company(Obj)->
       Name = get(?ST_COMPANY_NAME,Obj),
       Employees = get(?ST_COMPANY_EMPLOYEES,Obj),
       Projects = get(?ST_COMPANY_PROJECTS,Obj),
-      #company{id = ID, name = Name, employees = Employees};
+      #company{id = ID, name = Name, employees = Employees, projects = Projects};
     _ ->
       error
   end.

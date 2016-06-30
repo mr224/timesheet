@@ -7,7 +7,7 @@
 -export([add_new_user/5]).
 -export([add_user/5,add_user/6,add_user/7]).
 -export([delete_user/1,update_user/2]).
--export([add_project/5]).
+-export([add_project/5,add_project/7]).
 -export([delete_project/1,update_project/2]).
 -export([add_company/1]).
 -export([delete_company/1,update_company/2]).
@@ -61,6 +61,14 @@ add_project(Company, Name,Type,Description,Priority)->
   Status = ?ST_PROJECT_STATUS_NEW,
   Obj = st_obj:new(ID, [{?ST_PROJECT_TYPE,Type},{?ST_PROJECT_COMPANY,Company},{?ST_PROJECT_NAME,Name},
     {?ST_PROJECT_STATUS,Status},{?ST_PROJECT_DESCRIPTION,Description},{?ST_PROJECT_PRIORITY,Priority}]),
+  st_db_helper:save_new_project(Obj).
+
+add_project(Company, Name,Type,Description,Priority,Manager,Assign)->
+  ID = st_data_util:generate_key(),
+  Status = ?ST_PROJECT_STATUS_NEW,
+  Obj = st_obj:new(ID, [{?ST_PROJECT_TYPE,Type},{?ST_PROJECT_COMPANY,Company},{?ST_PROJECT_NAME,Name},
+    {?ST_PROJECT_STATUS,Status},{?ST_PROJECT_DESCRIPTION,Description},{?ST_PROJECT_PRIORITY,Priority},
+    {?ST_PROJECT_MANAGER,Manager},{?ST_PROJECT_ASSIGNEE,Assign}]),
   st_db_helper:save_new_project(Obj).
 
 -spec delete_project(id()) ->{ok,done} | {error,any()}.

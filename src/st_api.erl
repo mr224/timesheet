@@ -6,7 +6,7 @@
 %% ------------------------------------------------------------------
 
 %% Working with user
--export([get_user_obj/1]).
+-export([get_user_obj/1,get_company_obj/1,get_project_obj/1]).
 
 -export([log_work/5,delete_timestamp/1,update_timestamp/2, get_user_timesheet_for_period/3]).
 %%% queries
@@ -17,7 +17,14 @@
 %% ------------------------------------------------------------------
 
 get_user_obj(UserID)->
-  st_db_helper:get_user_data(UserID).
+  st_db_helper:get_obj(?TABLE_EMPLOYEE,UserID).
+
+get_company_obj(CompanyID)->
+  st_db_helper:get_obj(?TABLE_COMPANY,CompanyID).
+
+get_project_obj(ProjectID)->
+  st_db_helper:get_obj(?TABLE_PROJECT,ProjectID).
+
 
 log_work(UserID,ProjectID,Date,TSpent,Comment)->
   ID = st_data_util:generate_key(),

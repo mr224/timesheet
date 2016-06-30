@@ -15,7 +15,7 @@
 -export([save_new_session/1]).
 -export([get_session_data/1]).
 %%% queries
--export([get_user_data/1]).
+-export([get_obj/2]).
 -export([check_user_pwd/2, get_user_company/1]).
 -export([select_all_timestamps_for_user/1]).
 
@@ -61,7 +61,7 @@ update_user(ID,UpdatesList)->
 save_new_project(Obj)->
   Project = st_obj:obj_to_project(Obj),
   case save_new_project_to_mnesia(Project) of
-    ok->
+    {atomic,ok}->
       {ok,st_obj:id(Obj)};
     {aborted,Reason}->
       {error,Reason}
@@ -159,10 +159,10 @@ get_user_company(ID)->
       {error,Err}
   end.
 
-get_user_data(ID)->
-  case mnesia:dirty_read({?TABLE_EMPLOYEE,ID}) of
-    [Employee]->
-      {ok,st_obj:employee_to_obj(Employee)};
+get_obj(Table,ID)->
+  case mnesia:dirty_read({Table,ID}) of
+    [Record]->
+      {ok,st_obj:record_to_obj(Table,Record)};
     Err->
       {error,Err}
   end.
@@ -326,19 +326,65 @@ update_user_in_mnesia_1(ID,UpdatesList)->
   F = fun()->
     case mnesia:wread({?TABLE_EMPLOYEE,ID}) of
       []->
+        lager:error("User ~p doesn't exist in table employee", [ID]),
         mnesia:abort("User doesn't exist in table employee");
       [Employee]->
         Emp1 = st_obj:employee_to_obj(Employee),
-        Emp2 = st_obj:put(UpdatesList,Emp1),
+        Emp2 = update_employee_obj(Emp1,UpdatesList),
+        lager:debug("Employee obj before update = ~p", [Emp1]),
+        lager:debug("Employee obj after update = ~p", [Emp2]),
         mnesia:write(st_obj:obj_to_employee(Emp2))
     end
   end,
   mnesia:transaction(F).
 
+update_employee_obj(Obj,[])->
+  Obj;
+update_employee_obj(Obj,[{_K,undefined} | Rest])->
+  update_employee_obj(Obj,Rest);
+update_employee_obj(Obj,[{?ST_USER_PROJECTS_MANAGER = K,V} | Rest])->
+  case st_obj:get(K,Obj) of
+    L when is_list(L) ->
+      update_employee_obj(st_obj:put(K,[V|L],Obj),Rest);
+    _ ->
+      update_employee_obj(st_obj:put(K,[V],Obj),Rest)
+  end;
+update_employee_obj(Obj,[{?ST_USER_PROJECTS_ASSIGN = K,V} | Rest])->
+  case st_obj:get(K,Obj) of
+    L when is_list(L) ->
+      update_employee_obj(st_obj:put(K,[V|L],Obj),Rest);
+    _ ->
+      update_employee_obj(st_obj:put(K,[V],Obj),Rest)
+  end;
+update_employee_obj(Obj,[{K,V} | Rest])->
+  update_employee_obj(st_obj:put(K,V,Obj),Rest).
+
 save_new_project_to_mnesia(Project)->
   F = fun()->
     CompanyID = Project#project.company_id,
-    update_company_in_mnesia(CompanyID, [{?ST_PROJECT_ID,Project#project.id}]),
+    ManagerID = Project#project.manager,
+    AssignID = Project#project.assignee,
+    lager:debug("CompanyID = ~p", [CompanyID]),
+    lager:debug("ManagerID = ~p", [ManagerID]),
+    lager:debug("AssignID = ~p", [AssignID]),
+    case update_company_in_mnesia(CompanyID, [{?ST_COMPANY_PROJECTS,Project#project.id}]) of
+      {atomic,ok}->
+        lager:debug("Company ~p was successfully updated",[CompanyID]);
+      Err->
+        mnesia:abort(Err)
+    end,
+    case update_user_in_mnesia_1(ManagerID, [{?ST_USER_PROJECTS_MANAGER,Project#project.id}]) of
+      {atomic,ok}->
+        ok;
+      Err1->
+        mnesia:abort(Err1)
+    end,
+    case update_user_in_mnesia_1(AssignID, [{?ST_USER_PROJECTS_ASSIGN,Project#project.id}]) of
+      {atomic,ok}->
+        ok;
+      Err2->
+        mnesia:abort(Err2)
+    end,
     mnesia:write(Project)
   end,
   mnesia:transaction(F).
@@ -387,6 +433,9 @@ update_company_in_mnesia(ID,UpdatesList)->
       [Company]->
         C1 = st_obj:company_to_obj(Company),
         C2 = update_company_obj(C1,UpdatesList),
+        lager:debug("Update list: ~p",[UpdatesList]),
+        lager:debug("Company before change: ~p",[C1]),
+        lager:debug("Company after change: ~p",[C2]),
         mnesia:write(st_obj:obj_to_company(C2))
     end
       end,
@@ -422,7 +471,7 @@ update_company_obj(Obj,[{?ST_COMPANY_PROJECTS = K,V} | Rest])->
     L when is_list(L) ->
       update_company_obj(st_obj:put(K,[V|L],Obj),Rest);
     _ ->
-      update_company_obj(st_obj:put(K,V,Obj),Rest)
+      update_company_obj(st_obj:put(K,[V],Obj),Rest)
   end;
 update_company_obj(Obj,[{?ST_COMPANY_EMPLOYEES = K,V} | Rest])->
   case st_obj:get(K,Obj) of
