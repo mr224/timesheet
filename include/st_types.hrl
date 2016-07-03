@@ -43,6 +43,7 @@
 -define(ST_PROJECT_TIME_ESTIMATE, <<"time_estimate">>).
 -define(ST_PROJECT_PRIORITY, <<"priority">>).
 -define(ST_PROJECT_AUTHOR, <<"author">>).
+-define(ST_PROJECT_TIMESTAMPS, <<"timestamps">>).
 
 -define(ST_COMPANY_NAME, <<"name">>).
 -define(ST_COMPANY_ID, ?ST_ID).
@@ -98,6 +99,7 @@
   date_created :: date(),
   time_remaining :: number(),
   time_estimate :: number(),
+  timestamps :: [id()],
   priority :: binary(),
   author :: id()
 }).

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Timestamp</title>
+</head>
+<body>
+    <a href="/main.yaws">Main Page</a>
+    <br>
+    <a href="/projects.yaws">Projects</a>
+<form method="post">
+  Date:<br>
+  <input type="date" name="date"><br>
+  Hours Spent:<br>
+  <input type="number" name="time_spent"><br>
+  <input type="text" name="comment"><br>
+  <erl>
+
+    -include("include/st_types.hrl").
+    out(A)->
+      Q = yaws_api:parse_query(Arg).
+      case Q of
+        [{"project",KeyString}]->
+          K = list_to_binary(KeyString),
+          {ok,Session} = st_yaws_arg_rewrite:check_cookie(A,?ST_SESSION_NAME),
+          UserID = st_obj:get(?ST_USER_ID,Session),
+          Date = st_data_util:now(),
+
+          {ehtml,
+            {html,[],
+            [
+                {input, [{type,hidden},{name,project},{value, K}]},
+                {input, [{type,hidden},{name,user},{value, User}]},
+                {input, [{type,hidden},{name,date},{value, Date}]},
+                {input, [{type,submit},{value,"Login"}]}
+            ]}
+          }.
+
+  </erl>
+
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>
+<erl>
+out(A) ->
+    handle(Arg#arg.req#http_request.method,Arg),
+    {ehtml,
+        {html,[],
+        [{h2, [], "Login page"},
+        {hr},
+        {form, [{action,"login_post.yaws"},
+        {method,post}],
+        [{p,[], "Username"}, {input, [{type,text},{name,uname}]},
+        {p,[],"Password"}, {input, [{type,password},{name,passwd}]},
+        {input, [{type,submit},{value,"Login"}]},
+        {input, [{type,hidden},{name,url},
+        {value, A#arg.state}]}]}]}
+        }.
+
+</erl>

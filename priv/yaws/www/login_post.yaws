@@ -21,7 +21,7 @@ out(A) ->
             %%lager:debug("cookie created ~p",[Cookie]),
             [
             {redirect_local, kv("url", Q)},
-            %%{redirect_local, "/home.html"},
+            %%{redirect_local, "/home.yaws"},
             yaws_api:set_cookie(?ST_SESSION_NAME,SessionID,[])];
         Err ->
             lager:log(error,self(),"auth failed~n"),

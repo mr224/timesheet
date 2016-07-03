@@ -186,13 +186,13 @@ employee_to_obj(#employee{id = ID, name = Name,company_id = Company,email = Emai
 project_to_obj(#project{id = ID, type = Type, company_id = Company, name = Name,
   status = Status, description = Description, manager = Manager, time_spent = TSpent,
   assignee = Assignee, date_created = DateCreated, time_remaining = TRemaining, time_estimate = TEstimate,
-  priority = Priority, author = Author})->
+  priority = Priority, author = Author, timestamps = Timestamps})->
   new(ID, [
     {?ST_PROJECT_TYPE, Type}, {?ST_PROJECT_COMPANY, Company}, {?ST_PROJECT_NAME, Name},
     {?ST_PROJECT_STATUS,Status}, {?ST_PROJECT_DESCRIPTION,Description}, {?ST_PROJECT_MANAGER,Manager},
     {?ST_PROJECT_ASSIGNEE,Assignee}, {?ST_PROJECT_DATE_CREATED, DateCreated}, {?ST_PROJECT_TIME_REMAINING, TRemaining},
     {?ST_PROJECT_TIME_ESTIMATE,TEstimate}, {?ST_PROJECT_PRIORITY,Priority}, {?ST_PROJECT_AUTHOR,Author},
-    {?ST_PROJECT_TIME_SPENT, TSpent}
+    {?ST_PROJECT_TIME_SPENT, TSpent}, {?ST_PROJECT_TIMESTAMPS,Timestamps}
   ]).
 
 company_to_obj(#company{id = ID, name = Name, employees = Employees, projects = Projects})->

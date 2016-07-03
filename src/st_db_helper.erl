@@ -412,11 +412,24 @@ update_project_in_mnesia(ID,UpdatesList)->
         mnesia:abort("Project doesn't exist");
       [Project]->
         P1 = st_obj:project_to_obj(Project),
-        P2 = st_obj:put(UpdatesList,P1),
+        P2 = update_project_obj(P1,UpdatesList),
+%%        P2 = st_obj:put(UpdatesList,P1),
         mnesia:write(st_obj:obj_to_project(P2))
     end
       end,
   mnesia:transaction(F).
+
+update_project_obj(Obj,[])->
+  Obj;
+update_project_obj(Obj,[{?ST_PROJECT_TIMESTAMPS = K,V} | Rest])->
+  case st_obj:get(K,Obj) of
+    L when is_list(L) ->
+      update_project_obj(st_obj:put(K,[V|L],Obj),Rest);
+    _ ->
+      update_project_obj(st_obj:put(K,[V],Obj),Rest)
+  end;
+update_project_obj(Obj,[{K,V} | Rest])->
+  update_project_obj(st_obj:put(K,V,Obj),Rest).
 
 save_new_company_to_mnesia(Company)->
   mnesia:dirty_write(Company).
@@ -551,7 +564,20 @@ save_new_timestamp_to_mnesia(Timestamp)->
   [Project] = mnesia:dirty_read(?TABLE_PROJECT,Timestamp#timesheet.project_id),
   CompanyID = Project#project.company_id,
   Timestamp1 = Timestamp#timesheet{company_id = CompanyID},
-  mnesia:dirty_write({?TABLE_TIMESHEET,Timestamp1}).
+  save_new_timestamp_to_mnesia_1(Timestamp1,Project).
+%%  mnesia:dirty_write({?TABLE_TIMESHEET,Timestamp1}).
+
+save_new_timestamp_to_mnesia_1(Timestamp,Project)->
+  F = fun()->
+    case update_project(Project#project.id,[{?ST_PROJECT_TIMESTAMPS,Timestamp#timesheet.id}]) of
+      {ok,_}->
+        mnesia:write(Timestamp);
+      _->
+        mnesia:abort("Writing timestamp to project failed")
+    end
+      end,
+  mnesia:transaction(F).
+
 
 delete_timestamp_from_mnesia(ID)->
   mnesia:dirty_delete({?TABLE_TIMESHEET,ID}).

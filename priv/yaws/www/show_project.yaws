@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Projects</title>
+    <title>Project view</title>
 </head>
 <body>
     <a href="/main.yaws">Main Page</a>
@@ -11,28 +11,34 @@
     <br>
     <br>
 
-<a href="/add_project.yaws">
-   <button>Add Project</button>
-</a>
 </body>
 </html>
+
 <erl>
 -include("include/st_types.hrl").
 
 out(A) ->
+    Q = yaws_api:parse_query(A),
+    case Q of
+        [{"Key",KeyString}]->
+            K = list_to_binary(KeyString),
+            show_timestamps(A,K);
+        _->
+            [{redirect_local, "projects.yaws"}]
+    end.
+
+show_timestamps(A,K)->
     {ok,Session} = st_yaws_arg_rewrite:check_cookie(A,?ST_SESSION_NAME),
-    {ok,UserObj} = st_api:get_user_obj(st_obj:get(?ST_SESSION_USER_ID,Session)),
-    PAssign = st_obj:get(?ST_USER_PROJECTS_ASSIGN,UserObj),
-    PManage = st_obj:get(?ST_USER_PROJECTS_MANAGER,UserObj),
+    {ok,ProjectObj} = st_api:get_project_obj(K),
+
+    Timestamps = st_obj:get(?ST_PROJECT_TIMESTAMPS,ProjectObj),
     {ehtml,
         {html,[],
         [
+        {a,[href, f("/add_timestamp.yaws?project=~s",[K])],"Add Timestamp"},
         {hr},
-        "Projects Assign:",{br},
-        st_web_helper:projects_view(PAssign),
-        {hr},
-        "Projects Manage:",{br},
-        st_web_helper:projects_view(PManage)
+        "Work Log:",{br},
+        st_web_helper:timestamps_view(Tinestamps)
         ]}
         }.
 </erl>
