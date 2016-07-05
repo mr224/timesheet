@@ -7,8 +7,11 @@
 
 -define(ST_ID,<<"id">>).
 -define(ST_COMPANY, <<"company">>).
-
+-define(ST_PROJECT, <<"project">>).
 -define(ST_USER, <<"user">>).
+-define(ST_TIMESTAMP, <<"timestamp">>).
+
+
 -define(ST_USER_PASSWORD_HASH, <<"password_hash">>).
 -define(ST_USER_COMPANY,?ST_COMPANY).
 -define(ST_USER_LOGIN,<<"login">>).
@@ -27,8 +30,6 @@
 -define(ST_PROJECT_PRIORITY_MEDIUM, <<"medium">>).
 -define(ST_PROJECT_PRIORITY_HIGH, <<"high">>).
 
-
--define(ST_PROJECT, <<"project">>).
 -define(ST_PROJECT_ID, ?ST_ID).
 -define(ST_PROJECT_TYPE, <<"type">>).
 -define(ST_PROJECT_COMPANY, ?ST_COMPANY).
@@ -52,9 +53,9 @@
 -define(ST_COMPANY_DEFAULT_NAME, <<"my own projects">>).
 
 -define(ST_TIMESTAMP_ID, ?ST_ID).
--define(ST_TIMESTAMP_COMPANY_ID, ?ST_ID).
--define(ST_TIMESTAMP_USER_ID, ?ST_ID).
--define(ST_TIMESTAMP_PROJECT_ID, ?ST_ID).
+-define(ST_TIMESTAMP_COMPANY_ID, ?ST_COMPANY).
+-define(ST_TIMESTAMP_USER_ID, ?ST_USER).
+-define(ST_TIMESTAMP_PROJECT_ID, ?ST_PROJECT).
 -define(ST_TIMESTAMP_DATE, <<"date">>).
 -define(ST_TIMESTAMP_TIME_SPENT, <<"time_spent">>).
 -define(ST_TIMESTAMP_COMMENT, <<"comment">>).

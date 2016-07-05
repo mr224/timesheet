@@ -1,0 +1,29 @@
+<erl>
+-include("include/st_types.hrl").
+
+out(A) ->
+    lager:log(debug,self(),"creating project ~p",[A]),
+    Q = yaws_api:parse_post(A),
+
+    Date = list_to_binary(kv("date", Q)),
+    TSpent = list_to_binary(kv("time_spent", Q)),
+    Comment = list_to_binary(kv("comment", Q)),
+    ProjectID = list_to_binary(kv("project", Q)),
+    UserID = list_to_binary(kv("user", Q)),
+    DateTime = list_to_binary(kv("date_time", Q)),
+    case st_api:log_work(UserID,ProjectID,Date,TSpent,Comment,DateTime) of
+        {ok,TimestampID} ->
+            lager:log(info,self(),"timestamp created"),
+            [{redirect_local, f("/show_project.yaws?key=~s",[binary_to_list(ProjectID)])}];
+        Err ->
+            {ehtml,
+            {html, [],
+            {p, [], f("Timestamp creation failed: ~p",[Err])}}}
+    end.
+
+kv(K,L) ->
+    {value, {K, V}} = lists:keysearch(K,1,L),
+V.
+
+
+</erl>

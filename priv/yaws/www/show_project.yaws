@@ -20,7 +20,7 @@
 out(A) ->
     Q = yaws_api:parse_query(A),
     case Q of
-        [{"Key",KeyString}]->
+        [{"key",KeyString}]->
             K = list_to_binary(KeyString),
             show_timestamps(A,K);
         _->
@@ -30,15 +30,14 @@ out(A) ->
 show_timestamps(A,K)->
     {ok,Session} = st_yaws_arg_rewrite:check_cookie(A,?ST_SESSION_NAME),
     {ok,ProjectObj} = st_api:get_project_obj(K),
-
     Timestamps = st_obj:get(?ST_PROJECT_TIMESTAMPS,ProjectObj),
     {ehtml,
         {html,[],
         [
-        {a,[href, f("/add_timestamp.yaws?project=~s",[K])],"Add Timestamp"},
+        {a,[{href, f("/add_timestamp.yaws?project=~s",[binary_to_list(K)])}],"Add Timestamp"},
         {hr},
         "Work Log:",{br},
-        st_web_helper:timestamps_view(Tinestamps)
+        st_web_helper:timestamps_view(Timestamps)
         ]}
         }.
 </erl>

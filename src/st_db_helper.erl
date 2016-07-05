@@ -111,7 +111,7 @@ update_company(ID,UpdatesList)->
 save_new_timestamp(Obj)->
   Timestamp = st_obj:obj_to_timestamp(Obj),
   case save_new_timestamp_to_mnesia(Timestamp) of
-    ok->
+    {atomic,ok}->
       {ok,st_obj:id(Obj)};
     {aborted,Reason}->
       {error,Reason}
@@ -406,6 +406,7 @@ delete_project_from_mnesia(ID)->
   mnesia:transaction(F).
 
 update_project_in_mnesia(ID,UpdatesList)->
+  lager:debug("Update project in mnesia: K = ~p, UpdatesList = ~p",[ID, UpdatesList]),
   F = fun()->
     case mnesia:wread({?TABLE_PROJECT,ID}) of
       []->
@@ -413,7 +414,6 @@ update_project_in_mnesia(ID,UpdatesList)->
       [Project]->
         P1 = st_obj:project_to_obj(Project),
         P2 = update_project_obj(P1,UpdatesList),
-%%        P2 = st_obj:put(UpdatesList,P1),
         mnesia:write(st_obj:obj_to_project(P2))
     end
       end,
@@ -561,6 +561,7 @@ remove_from_project_obj(Obj,Type,EmployeeID)->
   end.
 
 save_new_timestamp_to_mnesia(Timestamp)->
+  lager:debug("save timestamp to mnesia: ~p",[Timestamp]),
   [Project] = mnesia:dirty_read(?TABLE_PROJECT,Timestamp#timesheet.project_id),
   CompanyID = Project#project.company_id,
   Timestamp1 = Timestamp#timesheet{company_id = CompanyID},

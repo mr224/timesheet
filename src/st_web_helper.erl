@@ -42,13 +42,13 @@ projects_view_1(K)->
       io_lib:format("~s  ~s     ~s  ~s",[Name,Type,Priority,Status]),
       {a,[{href,io_lib:format("/show_project.yaws?key=~s",[binary_to_list(K)])}],"Show Log"},
       "    ",
-      {a,[{href,io_lib:format("/delete_project.yaws?key=~s",[binary_to_list(K)])}],"Delete Project"}
+      {a,[{href,io_lib:format("/edit_project.yaws?key=~s",[binary_to_list(K)])}],"Edit Project"}
     ]
   }.
 
 
 timestamps_view([],Acc)->
-  Acc;
+  ["Name   Date   TimeSpent  DateTime Comment",{br} |Acc];
 timestamps_view([K|Rest],Acc)->
   timestamps_view(Rest,[timestamps_view_1(K)|Acc]).
 
@@ -59,9 +59,11 @@ timestamps_view_1(K)->
   SpentTime = st_obj:get(?ST_TIMESTAMP_TIME_SPENT,TSObj),
   DateTime = st_obj:get(?ST_TIMESTAMP_DATETIME,TSObj),
   Comment = st_obj:get(?ST_TIMESTAMP_COMMENT,TSObj),
+  {ok,UserObj} = st_api:get_user_obj(UserID),
+  UserName = st_obj:get(?ST_USER_NAME,UserObj),
   {'div',[{id,K}],
     [
-      io_lib:format("~s  ~s ~s ~s  ~s",[UserID,Date,SpentTime,DateTime,Comment]),
+      io_lib:format("~s   ~s   ~s   ~s   ~s",[UserName,Date,SpentTime,DateTime,Comment]),
       {a,[{href,io_lib:format("/edit_timestamp.yaws?key=~s",[binary_to_list(K)])}],"Edit"},
       "    ",
       {a,[{href,io_lib:format("/delete_timestamp.yaws?key=~s",[binary_to_list(K)])}],"Delete"}

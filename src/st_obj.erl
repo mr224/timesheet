@@ -120,10 +120,11 @@ obj_to_project(Obj)->
       TEstimate = get(?ST_PROJECT_TIME_ESTIMATE,Obj),
       Priority = get(?ST_PROJECT_PRIORITY,Obj),
       Author = get(?ST_PROJECT_AUTHOR,Obj),
+      Timestamps = get(?ST_PROJECT_TIMESTAMPS,Obj),
       #project{id = ID, type = Type, company_id = Company, name = Name,
         status = Status, description = Description, manager = Manager, time_spent = TSpent,
         assignee = Assignee, date_created = DateCreated, time_remaining = TRemaining, time_estimate = TEstimate,
-        priority = Priority, author = Author};
+        priority = Priority, author = Author, timestamps = Timestamps};
     _ ->
       error
   end.
