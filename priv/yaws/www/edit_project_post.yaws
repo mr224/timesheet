@@ -1,0 +1,40 @@
+<erl>
+-include("include/st_types.hrl").
+
+out(A) ->
+    Q = yaws_api:parse_post(A),
+    ProjectID = list_to_binary(kv("project", Q)),
+    {ok,ProjectObj} = st_api:get_project_obj(ProjectID),
+    NewName = list_to_binary(kv("name", Q)),
+    NewType = list_to_binary(kv("type", Q)),
+    NewPriority = list_to_binary(kv("priority", Q)),
+    NewStatus = list_to_binary(kv("status", Q)),
+    NewManager = list_to_binary(kv("manager", Q)),
+    NewAssign = list_to_binary(kv("assign", Q)),
+    NewDescription = list_to_binary(kv("description", Q)),
+    NewProjectObj = st_obj:new(ProjectID, [{?ST_PROJECT_TYPE,NewType},
+                    {?ST_PROJECT_NAME,NewName},{?ST_PROJECT_STATUS,NewStatus},
+                    {?ST_PROJECT_DESCRIPTION,NewDescription},{?ST_PROJECT_PRIORITY,NewPriority},
+                    {?ST_PROJECT_MANAGER,NewManager},{?ST_PROJECT_ASSIGNEE,NewAssign}]),
+    CompareList = [?ST_PROJECT_TYPE,?ST_PROJECT_NAME,?ST_PROJECT_STATUS,
+                    ?ST_PROJECT_DESCRIPTION,?ST_PROJECT_PRIORITY,?ST_PROJECT_MANAGER,
+                    ?ST_PROJECT_ASSIGNEE],
+    Diff = st_obj:compare_objects(ProjectObj,NewProjectObj,CompareList),
+    UpdateList = [{K,NewV}||{K,_,NewV}<-Diff],
+    case st_member_manager:update_project(ProjectID,UpdateList) of
+        {ok,ProjectID} ->
+            lager:log(info,self(),"project updated"),
+            [{redirect_local, "/projects.yaws"}];
+        Err ->
+            lager:log(error,self(),"project update failed, Key = ~p",[ProjectID]),
+            {ehtml,
+            {html, [],
+            {p, [], f("Project update failed: ~p",[Err])}}}
+    end.
+
+kv(K,L) ->
+    {value, {K, V}} = lists:keysearch(K,1,L),
+V.
+
+
+</erl>

@@ -8,6 +8,7 @@
 
 -export([projects_view/1]).
 -export([timestamps_view/1]).
+-export([gen_select/2]).
 
 
 %% ------------------------------------------------------------------
@@ -21,6 +22,9 @@ projects_view(List)->
 timestamps_view(List)->
   lager:debug("start timestamps view: ~p",[List]),
   timestamps_view(List,[]).
+
+gen_select(ValNames,Selected)->
+  gen_select(ValNames,Selected,[]).
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
@@ -70,4 +74,15 @@ timestamps_view_1(K)->
     ]
   }.
 
+gen_select([],_,Acc)->
+  Acc;
+gen_select([{Val,Name}|Rest],Val,Acc)->
+  gen_select(Rest,Val,[select_view(Val,Name,true)|Acc]);
+gen_select([{Val,Name}|Rest],Selected,Acc)->
+  gen_select(Rest,Selected,[select_view(Val,Name,false)|Acc]).
+
+select_view(Val,Name,true)->
+  {option, [{value,Val},selected],Name};
+select_view(Val,Name,_)->
+  {option, [{value,Val}],Name}.
 

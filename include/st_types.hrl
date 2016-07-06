@@ -24,11 +24,29 @@
 
 
 -define(ST_PROJECT_STATUS_NEW, <<"new">>).
+-define(ST_PROJECT_STATUS_ANALYZING, <<"analyzing">>).
+-define(ST_PROJECT_STATUS_ESTIMATION, <<"estimation">>).
+-define(ST_PROJECT_STATUS_DEVELOPMENT, <<"development">>).
+-define(ST_PROJECT_STATUS_TESTING, <<"testing">>).
+-define(ST_PROJECT_STATUS_UAT, <<"uat">>).
+-define(ST_PROJECT_STATUS_RELEASING, <<"releasing">>).
 -define(ST_PROJECT_STATUS_CLOSED, <<"closed">>).
+-define(ST_PROJECT_STATUS_LIST, [?ST_PROJECT_STATUS_NEW,?ST_PROJECT_STATUS_ANALYZING,
+                                  ?ST_PROJECT_STATUS_ESTIMATION,?ST_PROJECT_STATUS_DEVELOPMENT,
+                                  ?ST_PROJECT_STATUS_TESTING,?ST_PROJECT_STATUS_UAT,
+                                  ?ST_PROJECT_STATUS_RELEASING,?ST_PROJECT_STATUS_CLOSED]).
 
 -define(ST_PROJECT_PRIORITY_LOW, <<"low">>).
 -define(ST_PROJECT_PRIORITY_MEDIUM, <<"medium">>).
 -define(ST_PROJECT_PRIORITY_HIGH, <<"high">>).
+-define(ST_PROJECT_PRIORITY_LIST, [?ST_PROJECT_PRIORITY_LOW,?ST_PROJECT_PRIORITY_MEDIUM,
+                                    ?ST_PROJECT_PRIORITY_HIGH]).
+
+-define(ST_PROJECT_TYPE_BAG, <<"bug">>).
+-define(ST_PROJECT_TYPE_TASK, <<"task">>).
+-define(ST_PROJECT_TYPE_FEATURE, <<"feature">>).
+-define(ST_PROJECT_TYPE_LIST, [?ST_PROJECT_TYPE_BAG,?ST_PROJECT_TYPE_TASK,?ST_PROJECT_TYPE_FEATURE]).
+
 
 -define(ST_PROJECT_ID, ?ST_ID).
 -define(ST_PROJECT_TYPE, <<"type">>).

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Project</title>
+</head>
+<body>
+    <a href="/main.yaws">Main Page</a>
+    <br>
+    <a href="/projects.yaws">Projects</a>
+<h1>Edit project</h1>
+<erl>
+-include("include/st_types.hrl").
+out(A) ->
+    Q = yaws_api:parse_query(A),
+    case Q of
+        [{"key",KeyString}]->
+            K = list_to_binary(KeyString),
+            {ok,Session} = st_yaws_arg_rewrite:check_cookie(A,?ST_SESSION_NAME),
+            CompanyID = st_obj:get(?ST_SESSION_COMPANY_ID,Session),
+            {ok,ProjectObj} = st_api:get_project_obj(K),
+            {ok,CompanyObj} = st_api:get_company_obj(CompanyID),
+            AllEmpID = st_obj:get(?ST_COMPANY_EMPLOYEES,CompanyObj),
+            AllEmp = [begin {ok,EObj} = st_api:get_user_obj(K),
+                                    {binary_to_list(K),binary_to_list(st_obj:get(?ST_USER_NAME,EObj))} end
+                                    || K<-AllEmpID],
+            %%AllEmpA = proplists:delete(AssignID,AllEmp),
+            %%AllEmpM = proplists:delete(ManagerID,AllEmp),
+            PriorityValNames = [begin V1 = binary_to_list(V), {V1,V1} end ||
+                                    V <- ?ST_PROJECT_PRIORITY_LIST],
+            StatusValNames = [begin V1 = binary_to_list(V), {V1,V1} end ||
+                                    V <- ?ST_PROJECT_STATUS_LIST],
+            TypeValNames = [begin V1 = binary_to_list(V), {V1,V1} end ||
+                                    V <- ?ST_PROJECT_TYPE_LIST],
+            {ehtml,
+                {html,[],
+                [{br},
+                {form, [{method,post}, {action, 'edit_project_post.yaws'}],
+                [
+                "Name", {br},
+                {input, [{type,text}, {name,name},
+                    {value,binary_to_list(st_obj:get(?ST_PROJECT_NAME,ProjectObj))}]},{br},
+                 "Type", {br},
+                {select, [{name,type}],
+                    st_web_helper:gen_select(TypeValNames,
+                        binary_to_list(st_obj:get(?ST_PROJECT_TYPE,ProjectObj)))
+                },{br},
+                 "Priority", {br},
+                {select, [{name,priority}],
+                    st_web_helper:gen_select(PriorityValNames,
+                        binary_to_list(st_obj:get(?ST_PROJECT_PRIORITY,ProjectObj)))
+                },{br},
+                 "Status", {br},
+                {select, [{name,status}],
+                    st_web_helper:gen_select(StatusValNames,
+                        binary_to_list(st_obj:get(?ST_PROJECT_STATUS,ProjectObj)))
+                },{br},
+
+                "Manager: ",{br},
+                {select, [{name,manager}],
+                    st_web_helper:gen_select(AllEmp,
+                        binary_to_list(st_obj:get(?ST_PROJECT_MANAGER,ProjectObj)))
+                },{br},
+                "Assign: ",{br},
+                {select, [{name,assign}],
+                    st_web_helper:gen_select(AllEmp,
+                        binary_to_list(st_obj:get(?ST_PROJECT_ASSIGNEE,ProjectObj)))
+                },{br},
+                "Description: ",{br},
+                {input, [{type,text}, {name,description},
+                    {value,binary_to_list(st_obj:get(?ST_PROJECT_DESCRIPTION,ProjectObj))}]},
+                {input, [{type,hidden},{name,project},{value, K}]},{br},{br},
+                {input, [{type,submit},{value,"Edit Project"}]}
+                ]}
+                ]}
+            };
+        _->
+            [{redirect_local, "projects.yaws"}]
+    end.
+
+</erl>
+</body>
+</html>

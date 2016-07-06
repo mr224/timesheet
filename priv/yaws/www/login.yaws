@@ -9,7 +9,7 @@ out(A) ->
             {html, [], [
                 f("Hi, ~p, you're already signed in",[Login]),
                 {br},{br},
-                {a,[{href,"/main.html"}],"Main Page"},
+                {a,[{href,"/main.yaws"}],"Main Page"},
                 {br},{br},
                 {a,[{href,"/log_out.yaws"}],"Log Out"}
                 ]}

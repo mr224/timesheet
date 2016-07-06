@@ -15,6 +15,7 @@
 -export([obj_to_timestamp/1, timestamp_to_obj/1]).
 -export([obj_to_session/1,session_to_obj/1]).
 -export([is_st_obj/1]).
+-export([compare_objects/3]).
 
 -record(st_obj, {
               id :: id(),
@@ -215,6 +216,21 @@ session_to_obj(#session{id = ID, company = Company, user = User, login = Login, 
     {?ST_SESSION_USER_ID,User},{?ST_SESSION_DATA,Data}
   ]).
 
+compare_objects(O1,O2,KeyList)->
+  compare_objects(O1,O2,KeyList,[]).
+
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
+
+compare_objects(_,_,[],Acc)->
+  Acc;
+compare_objects(O1,O2,[K|Rest],Acc)->
+  V1 = get(K,O1),
+  V2 = get(K,O2),
+  if
+    (V1 =:= V2)->
+      compare_objects(O1,O2,Rest,Acc);
+    true->
+      compare_objects(O1,O2,Rest,[{K,V1,V2}|Acc])
+  end.

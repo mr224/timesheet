@@ -30,6 +30,23 @@
         {ok,CompanyObj} = st_api:get_company_obj(CompanyID),
         Manager = UserID,
         Assign = UserID,
+        {ehtml,
+            {html,[],
+            [{br},
+            "Company: ",{br},
+            {select, [{name,company}],
+                [{option, [{value,CompanyID}],st_obj:get(?ST_COMPANY_NAME,CompanyObj)}]
+            },{br},
+            "Manager: ",{br},
+            {select, [{name,manager}],
+                [{option, [{value,Manager}],st_obj:get(?ST_USER_NAME,UserObj)}]
+            },{br},
+            "Assign: ",{br},
+            {select, [{name,assign}],
+                [{option, [{value,Assign}],st_obj:get(?ST_USER_NAME,UserObj)}]
+            }
+            ]}
+            }.
   </erl>
   <br>
   Description:
