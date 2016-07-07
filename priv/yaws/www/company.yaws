@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company</title>
+</head>
+<body>
+    <a href="/main.yaws">Main Page</a>
+    <br>
+    <a href="/projects.yaws">Projects</a>
+    <br>
+    <br>
+
+<a href="/add_user.yaws">
+   <button>Add new employee to company</button>
+</a>
+</body>
+</html>
+<erl>
+-include("include/st_types.hrl").
+
+out(A) ->
+    {ok,Session} = st_yaws_arg_rewrite:check_cookie(A,?ST_SESSION_NAME),
+    {ok,CompanyObj} = st_api:get_company_obj(st_obj:get(?ST_SESSION_COMPANY_ID,Session)),
+    CompanyName = st_obj:get(?ST_COMPANY_NAME,CompanyObj),
+    Employees = st_obj:get(?ST_COMPANY_EMPLOYEES,CompanyObj),
+    {ehtml,
+        {html,[],
+        [
+        {hr},
+        "Company Name:",{br},
+        {form,[{method,post},{action,"/edit_company_name.yaws"}],
+            [
+                {insert,[{type,text},{value,binary_to_list(CompanyName)}]}
+             ]
+        },{br},
+        "Employees:",{br},
+        st_web_helper:employees_view(Employees)
+        ]}
+        }.
+</erl>

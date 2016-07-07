@@ -8,6 +8,8 @@
     <a href="/projects.yaws">Show projects</a>
     <br>
     <a href="/add_project.yaws">Add project</a>
+    <br>
+    <a href="/company.yaws">Company view</a>
 <erl>
 -include("include/st_types.hrl").
 out(A) ->

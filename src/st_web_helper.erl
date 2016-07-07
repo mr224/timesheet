@@ -7,6 +7,7 @@
 %% ------------------------------------------------------------------
 
 -export([projects_view/1]).
+-export([employees_view/1]).
 -export([timestamps_view/1]).
 -export([gen_select/2]).
 
@@ -18,6 +19,10 @@
 projects_view(List)->
   lager:debug("start projects view: ~p",[List]),
   projects_view(List,[]).
+
+employees_view(List)->
+  lager:debug("start employees view: ~p",[List]),
+  employees_view(List,[]).
 
 timestamps_view(List)->
   lager:debug("start timestamps view: ~p",[List]),
@@ -50,6 +55,20 @@ projects_view_1(K)->
     ]
   }.
 
+employees_view([],Acc)->
+  ["Name  Login  Department",{br} | Acc];
+employees_view([K|Rest],Acc)->
+  employees_view(Rest,[employees_view_1(K)|Acc]).
+
+employees_view_1(K)->
+  {ok,EmployeeObj} = st_api:get_user_obj(K),
+  Name = st_obj:get(?ST_USER_NAME,EmployeeObj),
+  Department = st_obj:get(?ST_USER_DEPARTMENT,EmployeeObj),
+  {'div',[{id,K}],
+    [
+      io_lib:format("~s   ~s",[Name,Department])
+    ]
+  }.
 
 timestamps_view([],Acc)->
   ["Name   Date   TimeSpent  DateTime Comment",{br} |Acc];
