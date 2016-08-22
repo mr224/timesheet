@@ -9,9 +9,15 @@
     <br>
     <a href="/projects.yaws">Projects</a>
     <br>
+    <a href="/company.yaws">Company view</a>
+    <br>
+    <a href="/log_out.yaws">Log out</a>
+    <br>
+    <br>
     <br>
 
-<a href="/add_user.yaws">
+
+<a href="/add_employee.yaws">
    <button>Add new employee to company</button>
 </a>
 </body>
@@ -31,7 +37,8 @@ out(A) ->
         "Company Name:",{br},
         {form,[{method,post},{action,"/edit_company_name.yaws"}],
             [
-                {insert,[{type,text},{value,binary_to_list(CompanyName)}]}
+                {input,[{type,text},{name,name},{value,binary_to_list(CompanyName)}]},
+                {input, [{type,submit},{value,"Edit Name"}]}
              ]
         },{br},
         "Employees:",{br},

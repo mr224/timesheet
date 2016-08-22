@@ -9,6 +9,11 @@
     <br>
     <a href="/projects.yaws">Projects</a>
     <br>
+    <a href="/company.yaws">Company view</a>
+    <br>
+    <a href="/log_out.yaws">Log out</a>
+    <br>
+    <br>
     <br>
 
 </body>

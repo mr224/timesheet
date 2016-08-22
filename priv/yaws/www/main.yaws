@@ -10,6 +10,9 @@
     <a href="/add_project.yaws">Add project</a>
     <br>
     <a href="/company.yaws">Company view</a>
+    <br>
+    <a href="/log_out.yaws">Log out</a>
+    <br>
 <erl>
 -include("include/st_types.hrl").
 out(A) ->

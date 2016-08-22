@@ -8,6 +8,10 @@
     <a href="/main.yaws">Main Page</a>
     <br>
     <a href="/projects.yaws">Projects</a>
+    <br>
+    <a href="/company.yaws">Company view</a>
+    <br>
+    <br>
 <form method="post" action="add_timestamp_post.yaws">
   Date:<br>
   <input type="date" name="date"><br>
