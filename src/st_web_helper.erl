@@ -36,7 +36,17 @@ gen_select(ValNames,Selected)->
 %% ------------------------------------------------------------------
 
 projects_view([],Acc)->
-  ["Name  Type  Priority Status",{br} | Acc];
+  [{tr,[],
+    [
+      {th,[],"Name"},
+      {th,[],"Type"},
+      {th,[],"Priority"},
+      {th,[],"Status"},
+      {th,[],"Show Log"},
+      {th,[],"Edit"}
+    ]},
+%%    "Name  Type  Priority Status",
+    {br} | Acc];
 projects_view([K|Rest],Acc)->
   projects_view(Rest,[projects_view_1(K)|Acc]).
 
@@ -48,10 +58,18 @@ projects_view_1(K)->
   Status = st_obj:get(?ST_PROJECT_STATUS,ProjectObj),
   {'div',[{id,K}],
     [
-      io_lib:format("~s  ~s     ~s  ~s",[Name,Type,Priority,Status]),
-      {a,[{href,io_lib:format("/show_project.yaws?key=~s",[binary_to_list(K)])}],"Show Log"},
-      "    ",
-      {a,[{href,io_lib:format("/edit_project.yaws?key=~s",[binary_to_list(K)])}],"Edit Project"}
+      {tr,[],[
+      {td,[],io_lib:format("~s",[Name])},
+      {td,[],io_lib:format("~s",[Type])},
+      {td,[],io_lib:format("~s",[Priority])},
+      {td,[],io_lib:format("~s",[Status])},
+      {td,[],[{a,[{href,io_lib:format("/show_project.yaws?key=~s",[binary_to_list(K)])}],"Show Log"}]},
+      {td,[],[{a,[{href,io_lib:format("/edit_project.yaws?key=~s",[binary_to_list(K)])}],"Edit Project"}]}
+      ]}
+%%      io_lib:format("~s  ~s     ~s  ~s",[Name,Type,Priority,Status]),
+%%      {a,[{href,io_lib:format("/show_project.yaws?key=~s",[binary_to_list(K)])}],"Show Log"},
+%%      "    ",
+%%      {a,[{href,io_lib:format("/edit_project.yaws?key=~s",[binary_to_list(K)])}],"Edit Project"}
     ]
   }.
 
